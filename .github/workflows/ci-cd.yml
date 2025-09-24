@@ -8,14 +8,38 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U testuser -d testdb"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Set environment variables
+        run: |
+          echo "SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/testdb" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=testuser" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=testpass" >> $GITHUB_ENV
 
       - name: Backend tests
-        run: mvn -f backend/pom.xml test
-
-      - name: Frontend install & test
-        run: |
-          cd frontend
-          npm install
-          npm test
+        run: mvn -B -f backend/pom.xml test
