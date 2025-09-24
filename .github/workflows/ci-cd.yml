@@ -22,6 +22,21 @@ jobs:
           cache: 'maven'
 
 
+      - name: Start PostgreSQL
+        uses: harmon758/postgresql-action@v2.1.1
+        with:
+          postgresql version: '15'
+          postgresql db: 'testdb'
+          postgresql user: 'testuser'
+          postgresql password: 'testpass'
+
+
+      - name: Set environment variables
+        run: |
+          echo "SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/testdb" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=testuser" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=testpass" >> $GITHUB_ENV
+
       - name: Backend tests
         run: mvn -B -f backend/pom.xml test
 
