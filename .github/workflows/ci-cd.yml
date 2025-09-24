@@ -44,8 +44,15 @@ jobs:
       - name: Backend tests
         run: mvn -B -f backend/pom.xml test
 
+      - name: Install Chrome for frontend tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip fontconfig libnss3 libgconf-2-4
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
+
       - name: Frontend install & test
         run: |
           cd frontend
           npm install
-          npm test
+          npm test -- --browsers ChromeHeadless
