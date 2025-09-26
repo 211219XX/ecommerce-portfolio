@@ -16,8 +16,8 @@ services:
       dockerfile: Dockerfile.backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ecommerce
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
       - db
     ports:
@@ -30,7 +30,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "80:80"
+      - "4200:80"
 
 volumes:
   db_data:
